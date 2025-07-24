@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>DurnAkinatör</title>
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #111; /* Arka planı siyah yaptım, isterseniz değiştirin */
+    color: #fff;
+    text-align: center;
+    padding: 2rem;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .container {
+    background: rgba(0,0,0,0.85);
+    padding: 2rem;
+    border-radius: 20px;
+    max-width: 600px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  button {
+    padding: 10px 20px;
+    margin: 1rem 0.5rem 0 0.5rem;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 10px;
+    background-color: #f9c846;
+    color: #000;
+    cursor: pointer;
+    min-width: 120px;
+    transition: background-color 0.3s ease;
+  }
+  button:hover {
+    background-color: #ffdb3b;
+  }
+  img {
+    width: 300px;
+    height: 400px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-top: 1rem;
+    box-shadow: 0 0 20px #f9c846;
+  }
+  p, h1, h2 {
+    margin: 0 0 1rem 0;
+  }
+</style>
+</head>
+<body>
+  <div class="container" id="game">
+    <h1>DurnAkinatör</h1>
+    <div id="content">
+      <p>Oyuna başlamak ister misiniz?</p>
+      <button onclick="startGame()">Başla</button>
+    </div>
+  </div>
+
+<script>
+  const sorular = [
+    "Bu kişi genellikle çok çay içer mi, adeta bir çay tiryakisi gibi?",
+    "Kısa boylu olup ailenin minik devi midir?",
+    "Evin gerçek kölesi gibi her işe koşar mı?",
+    "Son zamanlarda HİPO ile çok meşhur olmuş mu?",
+    "Panik atağı mı vardır?",
+    "Zekasıyla herkesi şaşırtır mı?",
+    "Televizyonda genellikle kovboy filmleri izleyen biri midir?",
+    "Bu kişi genellikle çok geç saatlerde uykuya dalar mı?",
+    "Horlamasıyla ev halkını uykusuz bırakan biri midir?",
+    "Ailenin en büyüğü olarak söz sahibi midir?",
+    "Bir işi hemen yapmak isteyen, canı tez biri midir?",
+    "Genellikle homurdanan ve mırıldanan biri midir?",
+    "Bu kişi avşar mı?",
+    "Bu kişi anneyi çok mu sever, annecimi gibi midir?",
+    "Bazen işleri ağırdan alır, çok yavaş mı hareket eder?",
+    "Maddi durumu oldukça iyi, parası çok mu?",
+    "Çok bonkör, eli açık biri midir?",
+    "Bu kişi yerinde duramaz mı?",
+    "Gezmekten ve yeni yerler keşfetmekten hoşlanır mı?",
+    "Elinden hiç telefon düşmeyen teknoloji bağımlısı mı?"
+  ];
+
+  const uyeler = {
+    "Kısmet": {
+      cevaplar: ["evet", "hayır", "belki", "hayır", "evet", "hayır", "hayır", "hayır", "hayır", "hayır", "evet", "evet", "hayır", "belki", "hayır", "hayır", "hayır", "evet", "hayır", "evet"],
+      resim: "https://i.ibb.co/Psy02dDj/kismet.png"
+    },
+    "Soner": {
+      cevaplar: ["belki", "belki", "hayır", "hayır", "belki", "hayır", "evet", "evet", "evet", "evet", "hayır", "evet", "hayır", "belki", "evet", "evet", "evet", "hayır", "evet", "evet"],
+      resim: "https://i.ibb.co/5X5ZDyzX/soner.png"
+    },
+    "Melike": {
+      cevaplar: ["hayır", "evet", "belki", "evet", "belki", "evet", "hayır", "belki", "belki", "hayır", "evet", "hayır", "hayır", "belki", "evet", "evet", "evet", "hayır", "evet", "hayır"],
+      resim: "https://i.ibb.co/DHNFpDhf/melike.png"
+    },
+    "Elif": {
+      cevaplar: ["hayır", "hayır", "hayır", "hayır", "belki", "hayır", "hayır", "hayır", "hayır", "hayır", "hayır", "hayır", "evet", "belki", "evet", "hayır", "hayır", "hayır", "hayır", "hayır"],
+      resim: "https://i.ibb.co/HLCtkQnb/elif.png"
+    },
+    "Hidayet": {
+      cevaplar: ["hayır", "hayır", "hayır", "hayır", "belki", "evet", "hayır", "evet", "evet", "hayır", "hayır", "hayır", "hayır", "belki", "evet", "belki", "belki", "hayır", "hayır", "evet"],
+      resim: "https://i.ibb.co/WvFW4SFw/hidayet.png"
+    },
+    "Emirhan": {
+      cevaplar: ["hayır", "evet", "evet", "hayır", "belki", "evet", "hayır", "hayır", "evet", "hayır", "hayır", "hayır", "hayır", "evet", "hayır", "hayır", "hayır", "evet", "hayır", "evet"],
+      resim: "https://i.ibb.co/2YSP1PKJ/emirhan.png"
+    }
+  };
+
+  let soruIndexleri = [];
+  let cevaplar = [];
+  let soruSirasi = 0;
+  let oyunBitti = false;
+
+  function startGame() {
+    document.getElementById("content").innerHTML = `
+      <p>Aklınızdan Durna ailesinden birini tutun.</p>
+      <button onclick="basla()">Tuttum</button>
+    `;
+    oyunBitti = false;
+    cevaplar = [];
+  }
+
+  function basla() {
+    let indexes = [...Array(sorular.length).keys()];
+    indexes.sort(() => 0.5 - Math.random());
+    soruIndexleri = indexes.slice(0, 10);
+    soruSirasi = 0;
+    cevaplar = [];
+    sonrakiSoru();
+  }
+
+  function sonrakiSoru() {
+    if (soruSirasi >= soruIndexleri.length) {
+      tahminEt();
+      return;
+    }
+    if (oyunBitti) return;
+
+    const soru = sorular[soruIndexleri[soruSirasi]];
+    document.getElementById("content").innerHTML = `
+      <p>${soru}</p>
+      <button onclick="cevapVer('evet')">Evet</button>
+      <button onclick="cevapVer('belki')">Belki</button>
+      <button onclick="cevapVer('hayır')">Hayır</button>
+    `;
+  }
+
+  function cevapVer(cvp) {
+    cevaplar.push(cvp);
+
+    const uyumlar = {};
+    for (const [isim, kisi] of Object.entries(uyeler)) {
+      let puan = 0;
+      for (let i = 0; i < cevaplar.length; i++) {
+        const beklenen = kisi.cevaplar[soruIndexleri[i]];
+        if (beklenen === cevaplar[i]) puan += 2;
+        else if (beklenen === "belki" || cevaplar[i] === "belki") puan += 1;
+      }
+      uyumlar[isim] = puan;
+    }
+    const maxPuan = Math.max(...Object.values(uyumlar));
+    const enYakinlar = Object.entries(uyumlar).filter(([_, p]) => p === maxPuan).map(([isim, _]) => isim);
+
+    if (cevaplar.length >= 5 && (enYakinlar.length === 1 && maxPuan >= cevaplar.length * 1.5)) {
+      sonucuGoster(enYakinlar[0]);
+      oyunBitti = true;
+    } else if (cevaplar.length >= soruIndexleri.length) {
+      sonucuBilemedim();
+      oyunBitti = true;
+    } else {
+      soruSirasi++;
+      sonrakiSoru();
+    }
+  }
+
+  function tahminEt() {
+    const uyumlar = {};
+    for (const [isim, kisi] of Object.entries(uyeler)) {
+      let puan = 0;
+      for (let i = 0; i < cevaplar.length; i++) {
+        const beklenen = kisi.cevaplar[soruIndexleri[i]];
+        if (beklenen === cevaplar[i]) puan += 2;
+        else if (beklenen === "belki" || cevaplar[i] === "belki") puan += 1;
+      }
+      uyumlar[isim] = puan;
+    }
+    const maxPuan = Math.max(...Object.values(uyumlar));
+    const enYakinlar = Object.entries(uyumlar).filter(([_, p]) => p === maxPuan).map(([isim, _]) => isim);
+    if (enYakinlar.length === 1) {
+      sonucuGoster(enYakinlar[0]);
+    } else {
+      sonucuBilemedim();
+    }
+  }
+
+  function sonucuGoster(isim) {
+    document.getElementById("content").innerHTML = `
+      <h2>${isim} olduğunu tahmin ediyorum!</h2>
+      <img src="${uyeler[isim].resim}" alt="${isim}" />
+      <p>Kazandım Hahah 😎</p>
+      <button onclick="startGame()">Tekrar Oyna</button>
+    `;
+  }
+
+  function sonucuBilemedim() {
+    document.getElementById("content").innerHTML = `
+      <h2>Bilemedim... Devam etmek ister misiniz?</h2>
+      <button onclick="devamEt()">Devam Et</button>
+      <button onclick="startGame()">Pes Ettim, Tekrar Oyna</button>
+    `;
+  }
+
+  function devamEt() {
+    oyunBitti = false;
+    sonrakiSoru();
+  }
+</script>
+</body>
+</html>
